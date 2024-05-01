@@ -1,0 +1,6 @@
+com/example/demo/DemoApplication.class
+com/example/demo/VolunteerController.class
+com/example/demo/Volunteer.class
+com/example/demo/VolunteerService.class
+com/example/demo/VolunteerServiceImpl.class
+com/example/demo/WebConfig.class
