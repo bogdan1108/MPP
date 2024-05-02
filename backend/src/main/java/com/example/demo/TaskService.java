@@ -2,6 +2,9 @@ package com.example.demo;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public interface TaskService {
     List<Task> getAllTasks();
 

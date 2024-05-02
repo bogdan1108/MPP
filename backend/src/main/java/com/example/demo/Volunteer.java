@@ -1,10 +1,18 @@
 package com.example.demo;
 
 import java.util.ArrayList;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Entity
 public class Volunteer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName;
     private String lastName;
@@ -14,7 +22,8 @@ public class Volunteer {
     private String address;
     private String faculty;
 
-    @OneToMany(mappedBy = "volunteer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    @OneToMany(mappedBy = "volunteer")
     private List<Task> tasks = new ArrayList<>();
 
     // Add other fields as needed

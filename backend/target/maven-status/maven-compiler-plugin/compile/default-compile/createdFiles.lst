@@ -1,10 +1,12 @@
-com/example/demo/DemoApplication.class
+com/example/demo/TaskRepository.class
 com/example/demo/TaskService.class
 com/example/demo/TaskController.class
-com/example/demo/VolunteerController.class
 com/example/demo/Volunteer.class
-com/example/demo/VolunteerService.class
-com/example/demo/VolunteerServiceImpl.class
 com/example/demo/Task.class
 com/example/demo/WebConfig.class
+com/example/demo/DemoApplication.class
+com/example/demo/VolunteerRepository.class
+com/example/demo/VolunteerController.class
+com/example/demo/VolunteerService.class
+com/example/demo/VolunteerServiceImpl.class
 com/example/demo/TaskServiceImpl.class

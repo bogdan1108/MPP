@@ -1,7 +1,8 @@
 package com.example.demo;
 
-import javax.persistence.*;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.*;
 
 @Entity
 public class Task {
@@ -12,6 +13,7 @@ public class Task {
     private String description;
     @ManyToOne
     @JoinColumn(name = "volunteer_id")
+    @JsonManagedReference
     private Volunteer volunteer;
 
     // Constructors, getters, and setters

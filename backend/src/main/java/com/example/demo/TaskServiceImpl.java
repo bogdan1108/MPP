@@ -1,45 +1,50 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 @Service
 public class TaskServiceImpl implements TaskService {
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private int nextId = 1;
+
+    private final TaskRepository taskRepository;
+
+    @Autowired
+    public TaskServiceImpl(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     @Override
     public List<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
+        return taskRepository.findAll();
     }
 
     @Override
     public Task getTaskById(int id) {
-        return tasks.get(id);
+        return taskRepository.findById(id).orElse(null);
     }
 
     @Override
     public Task createTask(Task task) {
-        task.setId(nextId++);
-        tasks.put(task.getId(), task);
-        return task;
+        return taskRepository.save(task);
     }
 
     @Override
     public Task updateTask(int id, Task updatedTask) {
-        if (tasks.containsKey(id)) {
-            updatedTask.setId(id);
-            tasks.put(id, updatedTask);
-            return updatedTask;
-        }
-        return null; // Task not found
+        return taskRepository.findById(id)
+                .map(task -> {
+                    task.setName(updatedTask.getName());
+                    task.setDescription(updatedTask.getDescription());
+                    task.setVolunteer(updatedTask.getVolunteer());
+                    return taskRepository.save(task);
+                })
+                .orElse(null);
     }
 
     @Override
     public void deleteTask(int id) {
-        tasks.remove(id);
+        taskRepository.deleteById(id);
     }
+
+    // Implement other methods as needed
 }

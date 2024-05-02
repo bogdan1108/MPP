@@ -1,72 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VolunteerServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.example.demo</a> &gt; <span class="el_source">VolunteerServiceImpl.java</span></div><h1>VolunteerServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Collectors;
 
 @Service
-<span class="fc" id="L12">public class VolunteerServiceImpl implements VolunteerService {</span>
+public class VolunteerServiceImpl implements VolunteerService {
 
-<span class="fc" id="L14">    private final Map&lt;Integer, Volunteer&gt; volunteers = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L15">    private int nextId = 1;</span>
+    private final VolunteerRepository volunteerRepository;
+
+    @Autowired
+<span class="fc" id="L13">    public VolunteerServiceImpl(VolunteerRepository volunteerRepository) {</span>
+<span class="fc" id="L14">        this.volunteerRepository = volunteerRepository;</span>
+<span class="fc" id="L15">    }</span>
 
     @Override
     public List&lt;Volunteer&gt; getAllVolunteers() {
-<span class="fc" id="L19">        return new ArrayList&lt;&gt;(volunteers.values());</span>
+<span class="nc" id="L19">        return volunteerRepository.findAll();</span>
     }
 
     @Override
     public Volunteer getVolunteerById(int id) {
-<span class="fc" id="L24">        return volunteers.get(id);</span>
+<span class="nc" id="L24">        return volunteerRepository.findById(id).orElse(null);</span>
     }
 
     @Override
     public Volunteer createVolunteer(Volunteer volunteer) {
-<span class="fc" id="L29">        volunteer.setId(nextId++);</span>
-<span class="fc" id="L30">        volunteers.put(volunteer.getId(), volunteer);</span>
-<span class="fc" id="L31">        return volunteer;</span>
+<span class="nc" id="L29">        return volunteerRepository.save(volunteer);</span>
     }
 
     @Override
     public Volunteer updateVolunteer(int id, Volunteer updatedVolunteer) {
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (volunteers.containsKey(id)) {</span>
-<span class="fc" id="L37">            updatedVolunteer.setId(id);</span>
-<span class="fc" id="L38">            volunteers.put(id, updatedVolunteer);</span>
-<span class="fc" id="L39">            return updatedVolunteer;</span>
-        }
-<span class="fc" id="L41">        return null; // Volunteer not found</span>
+<span class="nc" id="L34">        return volunteerRepository.findById(id)</span>
+<span class="nc" id="L35">                .map(volunteer -&gt; {</span>
+<span class="nc" id="L36">                    volunteer.setFirstName(updatedVolunteer.getFirstName());</span>
+<span class="nc" id="L37">                    volunteer.setLastName(updatedVolunteer.getLastName());</span>
+<span class="nc" id="L38">                    volunteer.setAge(updatedVolunteer.getAge());</span>
+<span class="nc" id="L39">                    volunteer.setEmail(updatedVolunteer.getEmail());</span>
+<span class="nc" id="L40">                    volunteer.setPhone(updatedVolunteer.getPhone());</span>
+<span class="nc" id="L41">                    volunteer.setAddress(updatedVolunteer.getAddress());</span>
+<span class="nc" id="L42">                    volunteer.setFaculty(updatedVolunteer.getFaculty());</span>
+<span class="nc" id="L43">                    return volunteerRepository.save(volunteer);</span>
+                })
+<span class="nc" id="L45">                .orElse(null);</span>
     }
 
     @Override
     public void deleteVolunteer(int id) {
-<span class="fc" id="L46">        volunteers.remove(id);</span>
-<span class="fc" id="L47">    }</span>
-
-    @Override
-    public List&lt;Volunteer&gt; getAllVolunteersSorted(String sortBy, String sortOrder) {
-<span class="fc" id="L51">        Comparator&lt;Volunteer&gt; comparator = Comparator.comparing(Volunteer::getId); // Default sorting by id</span>
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (&quot;firstName&quot;.equalsIgnoreCase(sortBy)) {</span>
-<span class="fc" id="L53">            comparator = Comparator.comparing(Volunteer::getFirstName);</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">        } else if (&quot;lastName&quot;.equalsIgnoreCase(sortBy)) {</span>
-<span class="nc" id="L55">            comparator = Comparator.comparing(Volunteer::getLastName);</span>
-        }
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (&quot;desc&quot;.equalsIgnoreCase(sortOrder)) {</span>
-<span class="nc" id="L58">            comparator = comparator.reversed();</span>
-        }
-<span class="fc" id="L60">        return volunteers.values().stream()</span>
-<span class="fc" id="L61">                .sorted(comparator)</span>
-<span class="fc" id="L62">                .collect(Collectors.toList());</span>
-    }
-
-    @Override
-    public List&lt;Volunteer&gt; getPaginatedVolunteers(int page, int pageSize) {
-<span class="fc" id="L67">        int fromIndex = (page - 1) * pageSize;</span>
-<span class="fc" id="L68">        int toIndex = Math.min(fromIndex + pageSize, volunteers.size());</span>
-<span class="fc" id="L69">        return new ArrayList&lt;&gt;(volunteers.values()).subList(fromIndex, toIndex);</span>
-    }
+<span class="nc" id="L50">        volunteerRepository.deleteById(id);</span>
+<span class="nc" id="L51">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
