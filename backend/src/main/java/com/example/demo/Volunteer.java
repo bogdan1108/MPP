@@ -1,6 +1,18 @@
 package com.example.demo;
 
+import java.util.ArrayList;
+import jakarta.persistence.*;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Entity
 public class Volunteer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName;
     private String lastName;
@@ -9,6 +21,10 @@ public class Volunteer {
     private String phone;
     private String address;
     private String faculty;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "volunteer")
+    private List<Task> tasks = new ArrayList<>();
 
     // Add other fields as needed
 
@@ -92,6 +108,24 @@ public class Volunteer {
 
     public void setFaculty(String faculty) {
         this.faculty = faculty;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setVolunteer(this);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.setVolunteer(null);
     }
 
     // Override toString() method for debugging purposes

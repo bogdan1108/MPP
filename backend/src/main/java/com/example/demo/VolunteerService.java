@@ -2,7 +2,11 @@ package com.example.demo;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public interface VolunteerService {
+
     List<Volunteer> getAllVolunteers();
 
     Volunteer getVolunteerById(int id);
@@ -12,8 +16,4 @@ public interface VolunteerService {
     Volunteer updateVolunteer(int id, Volunteer volunteer);
 
     void deleteVolunteer(int id);
-
-    List<Volunteer> getAllVolunteersSorted(String sortBy, String sortOrder);
-
-    List<Volunteer> getPaginatedVolunteers(int page, int pageSize);
 }
