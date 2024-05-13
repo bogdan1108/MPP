@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -12,10 +11,12 @@ import java.util.List;
 public class VolunteerController {
 
     private final VolunteerService volunteerService;
+    private final SocketService socketService; // Define the SocketService field
 
     @Autowired
-    public VolunteerController(VolunteerService volunteerService) {
+    public VolunteerController(VolunteerService volunteerService, SocketService socketService) {
         this.volunteerService = volunteerService;
+        this.socketService = socketService;
     }
 
     @GetMapping
@@ -37,6 +38,7 @@ public class VolunteerController {
     @PostMapping
     public ResponseEntity<Volunteer> createVolunteer(@RequestBody Volunteer volunteer) {
         Volunteer createdVolunteer = volunteerService.createVolunteer(volunteer);
+        socketService.broadcastVolunteerCreated(createdVolunteer); // Now socketService is recognized
         return new ResponseEntity<>(createdVolunteer, HttpStatus.CREATED);
     }
 
