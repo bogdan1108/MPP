@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 
@@ -13,7 +13,7 @@ public class Task {
     private String description;
     @ManyToOne
     @JoinColumn(name = "volunteer_id")
-    @JsonManagedReference
+    @JsonBackReference("taskVolunteers")
     private Volunteer volunteer;
 
     // Constructors, getters, and setters

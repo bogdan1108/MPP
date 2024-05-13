@@ -49,4 +49,5 @@ public class VolunteerServiceImpl implements VolunteerService {
     public void deleteVolunteer(int id) {
         volunteerRepository.deleteById(id);
     }
+
 }

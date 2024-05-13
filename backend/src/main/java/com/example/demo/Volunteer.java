@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
@@ -22,8 +21,8 @@ public class Volunteer {
     private String address;
     private String faculty;
 
-    @JsonBackReference
     @OneToMany(mappedBy = "volunteer")
+    @JsonManagedReference(value = "taskVolunteers")
     private List<Task> tasks = new ArrayList<>();
 
     // Add other fields as needed
