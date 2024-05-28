@@ -1,24 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Volunteers } from "../volunteers";
+import { useGlobalState } from "../GlobalState";
 
 export const AddPage = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState(Volunteers); // Initialize data with Volunteers array
-  const [volunteerToAdd, setVolunteerToAdd] = useState({
-    id: "",
-    firstName: "",
-    lastName: "",
-    age: "",
-    email: "",
-    phone: "",
-    address: "",
-    faculty: ""
-  });
-
-
+  const { createVolunteer } = useGlobalState();
   const [volunteer, setVolunteer] = useState({
-    id: "",
     firstName: "",
     lastName: "",
     age: "",
@@ -30,34 +17,26 @@ export const AddPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Check if the field is 'age' and the value is not a valid number
+    if (name === 'age' && isNaN(value)) {
+      // Display a warning using a modal dialog
+      alert('Please enter a valid age (numeric value)');
+      return; // Exit early, don't update the state
+    }
+
+    // Update the volunteer state as usual
     setVolunteer(prevVolunteer => ({
       ...prevVolunteer,
       [name]: value
     }));
   };
 
-  const handleSubmit = () => {
-    // get the data from the fields
-    const newVolunteer = {
-        id: data.length + 1,
-        firstName: volunteer.firstName,
-        lastName: volunteer.lastName,
-        age: volunteer.age,
-        email: volunteer.email,
-        phone: volunteer.phone,
-        address: volunteer.address,
-        faculty: volunteer.faculty
-    };
-    // add the new volunteer to the data
-    data.push(newVolunteer);
-    // update the state
-    setData(data);
-    // navigate to the home page
-
-
-      navigate(`/`);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createVolunteer(volunteer); // Call addVolunteer from global state
+    navigate("/"); // Navigate to home page
   };
-  
 
   const handleBack = () => {
     navigate("/");

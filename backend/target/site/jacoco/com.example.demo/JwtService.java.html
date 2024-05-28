@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">demo</a> &gt; <a href="index.source.html" class="el_package">com.example.demo</a> &gt; <span class="el_source">JwtService.java</span></div><h1>JwtService.java</h1><pre class="source lang-java linenums">package com.example.demo;
+
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import java.util.function.Function;
+
+@Service
+<span class="fc" id="L17">public class JwtService {</span>
+
+<span class="fc" id="L19">    private String SECRET_KEY = &quot;f44ff9021abe8d92d9d9bb6f82f7d523c2339f62f197eab66fd5db8a0650e15d&quot;;</span>
+
+    public String extractUsername(String token) {
+<span class="nc" id="L22">        return extractClaim(token, Claims::getSubject);</span>
+    }
+
+    public boolean isValid(String token, UserDetails user) {
+<span class="nc" id="L26">        String username = extractUsername(token);</span>
+<span class="nc bnc" id="L27" title="All 4 branches missed.">        return (username.equals(user.getUsername()) &amp;&amp; !isTokenExpired(token));</span>
+    }
+
+    private boolean isTokenExpired(String token) {
+<span class="nc" id="L31">        return extractExpiration(token).before(new Date());</span>
+    }
+
+    private Date extractExpiration(String token) {
+<span class="nc" id="L35">        return extractClaim(token, Claims::getExpiration);</span>
+    }
+
+    public &lt;T&gt; T extractClaim(String token, Function&lt;Claims, T&gt; resolver) {
+<span class="nc" id="L39">        Claims claims = extractAllClaims(token);</span>
+<span class="nc" id="L40">        return resolver.apply(claims);</span>
+    }
+
+    private Claims extractAllClaims(String token) {
+<span class="nc" id="L44">        return Jwts</span>
+<span class="nc" id="L45">                .parser()</span>
+<span class="nc" id="L46">                .verifyWith(getSignKey())</span>
+<span class="nc" id="L47">                .build()</span>
+<span class="nc" id="L48">                .parseSignedClaims(token)</span>
+<span class="nc" id="L49">                .getPayload();</span>
+    }
+
+    public String generateToken(User user) {
+        String token = Jwts
+<span class="nc" id="L54">                .builder()</span>
+<span class="nc" id="L55">                .subject(user.getUsername())</span>
+<span class="nc" id="L56">                .issuedAt(new Date(System.currentTimeMillis()))</span>
+<span class="nc" id="L57">                .expiration(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))</span>
+<span class="nc" id="L58">                .signWith(getSignKey())</span>
+<span class="nc" id="L59">                .compact();</span>
+
+<span class="nc" id="L61">        return token;</span>
+    }
+
+    private SecretKey getSignKey() {
+<span class="nc" id="L65">        byte[] keyBytes = Decoders.BASE64URL.decode(SECRET_KEY);</span>
+<span class="nc" id="L66">        return Keys.hmacShaKeyFor(keyBytes);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

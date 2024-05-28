@@ -1,65 +1,50 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Volunteers } from "../volunteers";
-
-
+import axios from "axios";
 
 export const EditPage = () => {
-    const [data, setData] = useState([Volunteers]); // Initialize data with Volunteers array
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [volunteer, setVolunteer] = useState(null);
+
     useEffect(() => {
-        setData(Volunteers);
-      }, []);
-
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  const [volunteer, setVolunteer] = useState({
-    id: "",
-    firstName: "",
-    lastName: "",
-    age: "",
-    email: "",
-    phone: "",
-    address: "",
-    faculty: ""
-  });
-
-  useEffect(() => {
-    const foundVolunteer = Volunteers.find((volunteer) => volunteer.id === parseInt(id));
-    if (foundVolunteer) {
-      setVolunteer(foundVolunteer);
-    }
-  }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setVolunteer(prevVolunteer => ({
-      ...prevVolunteer,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    const updatedVolunteer = {
-        id: volunteer.id,
-        firstName: volunteer.firstName,
-        lastName: volunteer.lastName,
-        age: volunteer.age,
-        email: volunteer.email,
-        phone: volunteer.phone,
-        address: volunteer.address,
-        faculty: volunteer.faculty
+        const fetchVolunteerDetails = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/volunteers/${id}`);
+                setVolunteer(response.data);
+            } catch (error) {
+                console.error('Error fetching volunteer details:', error.message);
+            }
         };
-    data[volunteer.id - 1] = updatedVolunteer;
-    setData(data);
-    navigate(`/`);
-  };
 
-  const handleBack = (e) => {
-    e.preventDefault();
-    navigate(`/`);
-  }
+        fetchVolunteerDetails();
+    }, [id]);
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setVolunteer(prevVolunteer => ({
+            ...prevVolunteer,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.put(`http://localhost:8080/api/volunteers/${id}`, volunteer);
+            navigate(`/`);
+        } catch (error) {
+            console.error('Error updating volunteer:', error.message);
+        }
+    };
+
+    const handleBack = () => {
+        navigate("/");
+    };
+
+    if (!volunteer) {
+        return <div>Loading...</div>;
+    }
   return (
     <div style={{ textAlign: "center", maxWidth: "500px", margin: "10px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "10px", backgroundColor: "white", boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}>
         <h2 style={{ marginBottom: "20px", color: "#333" }}>Edit Volunteer</h2>

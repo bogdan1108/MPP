@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -12,48 +11,51 @@ import java.util.List;
 public class VolunteerController {
 
     private final VolunteerService volunteerService;
+    private final SocketService socketService; // Define the SocketService field
 
     @Autowired
-<span class="fc" id="L17">    public VolunteerController(VolunteerService volunteerService) {</span>
+<span class="fc" id="L17">    public VolunteerController(VolunteerService volunteerService, SocketService socketService) {</span>
 <span class="fc" id="L18">        this.volunteerService = volunteerService;</span>
-<span class="fc" id="L19">    }</span>
+<span class="fc" id="L19">        this.socketService = socketService;</span>
+<span class="fc" id="L20">    }</span>
 
     @GetMapping
     public ResponseEntity&lt;List&lt;Volunteer&gt;&gt; getAllVolunteers() {
-<span class="nc" id="L23">        List&lt;Volunteer&gt; volunteers = volunteerService.getAllVolunteers();</span>
-<span class="nc" id="L24">        return ResponseEntity.ok(volunteers);</span>
+<span class="nc" id="L24">        List&lt;Volunteer&gt; volunteers = volunteerService.getAllVolunteers();</span>
+<span class="nc" id="L25">        return ResponseEntity.ok(volunteers);</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Volunteer&gt; getVolunteerById(@PathVariable int id) {
-<span class="nc" id="L29">        Volunteer volunteer = volunteerService.getVolunteerById(id);</span>
-<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (volunteer != null) {</span>
-<span class="nc" id="L31">            return ResponseEntity.ok(volunteer);</span>
+<span class="nc" id="L30">        Volunteer volunteer = volunteerService.getVolunteerById(id);</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (volunteer != null) {</span>
+<span class="nc" id="L32">            return ResponseEntity.ok(volunteer);</span>
         } else {
-<span class="nc" id="L33">            return ResponseEntity.notFound().build();</span>
+<span class="nc" id="L34">            return ResponseEntity.notFound().build();</span>
         }
     }
 
     @PostMapping
     public ResponseEntity&lt;Volunteer&gt; createVolunteer(@RequestBody Volunteer volunteer) {
-<span class="nc" id="L39">        Volunteer createdVolunteer = volunteerService.createVolunteer(volunteer);</span>
-<span class="nc" id="L40">        return new ResponseEntity&lt;&gt;(createdVolunteer, HttpStatus.CREATED);</span>
+<span class="nc" id="L40">        Volunteer createdVolunteer = volunteerService.createVolunteer(volunteer);</span>
+<span class="nc" id="L41">        socketService.broadcastVolunteerCreated(createdVolunteer); // Now socketService is recognized</span>
+<span class="nc" id="L42">        return new ResponseEntity&lt;&gt;(createdVolunteer, HttpStatus.CREATED);</span>
     }
 
     @PutMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Volunteer&gt; updateVolunteer(@PathVariable int id, @RequestBody Volunteer volunteer) {
-<span class="nc" id="L45">        Volunteer updatedVolunteer = volunteerService.updateVolunteer(id, volunteer);</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (updatedVolunteer != null) {</span>
-<span class="nc" id="L47">            return ResponseEntity.ok(updatedVolunteer);</span>
+<span class="nc" id="L47">        Volunteer updatedVolunteer = volunteerService.updateVolunteer(id, volunteer);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (updatedVolunteer != null) {</span>
+<span class="nc" id="L49">            return ResponseEntity.ok(updatedVolunteer);</span>
         } else {
-<span class="nc" id="L49">            return ResponseEntity.notFound().build();</span>
+<span class="nc" id="L51">            return ResponseEntity.notFound().build();</span>
         }
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; deleteVolunteer(@PathVariable int id) {
-<span class="nc" id="L55">        volunteerService.deleteVolunteer(id);</span>
-<span class="nc" id="L56">        return ResponseEntity.noContent().build();</span>
+<span class="nc" id="L57">        volunteerService.deleteVolunteer(id);</span>
+<span class="nc" id="L58">        return ResponseEntity.noContent().build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

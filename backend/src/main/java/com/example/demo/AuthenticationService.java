@@ -2,6 +2,8 @@ package com.example.demo;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,21 +26,23 @@ public class AuthenticationService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        user.setRole(request.getRole());
+        user.setRole(request.getRole()); // Ensure the User entity has a 'role' field
         user = repository.save(user);
 
         String token = jwtService.generateToken(user);
-        return new AuthenticationResponse(token);
+        return new AuthenticationResponse(token, user.getRole().name()); // Convert enum to String
     }
 
     public AuthenticationResponse authenticate(User request) {
-        authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        // Attempt authentication with Spring Security
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        User user = repository.findByUsername(request.getUsername()).orElseThrow();
+        // Fetch the authenticated user details
+        User user = repository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
         String token = jwtService.generateToken(user);
-
-        return new AuthenticationResponse(token);
+        return new AuthenticationResponse(token, user.getRole().name()); // Convert enum to String
     }
 }
