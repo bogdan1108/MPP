@@ -103,7 +103,7 @@ export const GlobalStateProvider = ({ children }) => {
   };
 
   // Add volunteer
-  const addVolunteer = (volunteerData) => {
+  const createVolunteer = (volunteerData) => {
     dispatch({ type: actionTypes.ADD_VOLUNTEER_REQUEST });
     axios
       .post("http://localhost:8080/api/volunteers", volunteerData)
@@ -134,7 +134,7 @@ export const GlobalStateProvider = ({ children }) => {
 
   return (
     <GlobalStateContext.Provider
-      value={{ ...state, fetchVolunteers, deleteVolunteer, addVolunteer, updateVolunteer }}
+      value={{ ...state, fetchVolunteers, deleteVolunteer, createVolunteer, updateVolunteer }}
     >
       {children}
     </GlobalStateContext.Provider>

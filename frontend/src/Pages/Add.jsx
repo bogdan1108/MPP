@@ -34,7 +34,7 @@ export const AddPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createVolunteer(volunteer); // Call addVolunteer from global state
+    createVolunteer(volunteer); // Call createVolunteer from global state
     navigate("/"); // Navigate to home page
   };
 
